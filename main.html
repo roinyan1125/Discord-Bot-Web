@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>アイスBot - Discord</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Helvetica,Arial,sans-serif;
+}
+
+body{
+  background:#0f1115;
+  color:#fff;
+
+  padding-top:110px;
+}
+
+/* =========================
+   Header
+========================= */
+
+header{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:70px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:0 28px;
+
+  background:#14161c;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+
+  z-index:1000;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  font-size:22px;
+  font-weight:bold;
+
+  color:#5865F2;
+  text-decoration:none;
+}
+
+.logo img{
+  width:38px;
+  height:38px;
+  border-radius:8px;
+
+  object-fit:cover;
+  display:block;
+}
+
+nav{
+  display:flex;
+  gap:18px;
+  align-items:center;
+}
+
+nav a{
+  text-decoration:none;
+  color:#ddd;
+  font-size:14px;
+
+  padding:6px 8px;
+  border-radius:6px;
+
+  transition:.2s;
+}
+
+nav a:hover{
+  color:#5865F2;
+  background:rgba(255,255,255,0.04);
+}
+
+/* =========================
+   Dropdown
+========================= */
+
+.dropdown{
+  position:relative;
+}
+
+.dropbtn{
+  background:transparent;
+  border:none;
+
+  color:#ddd;
+  font-size:14px;
+
+  cursor:pointer;
+
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.chevron{
+  font-size:11px;
+  color:#888;
+  transition:.2s;
+}
+
+.dropdown:hover .chevron{
+  transform:rotate(180deg);
+  color:#5865F2;
+}
+
+.dropdown-menu{
+  position:absolute;
+  top:100%;
+  left:0;
+
+  min-width:190px;
+
+  background:rgba(20,22,28,0.98);
+
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px;
+
+  padding:6px;
+  margin-top:14px;
+
+  z-index:2000;
+
+  opacity:0;
+  visibility:hidden;
+
+  transform:translateY(6px);
+
+  transition:
+    opacity .25s ease,
+    transform .25s ease,
+    visibility 0s linear .25s;
+}
+
+.dropdown:hover .dropdown-menu,
+.dropdown-menu:hover{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0);
+
+  transition-delay:0s;
+}
+
+.dropdown-menu::before{
+  content:"";
+  position:absolute;
+
+  top:-10px;
+  left:0;
+
+  width:100%;
+  height:10px;
+
+  background:transparent;
+}
+
+.dropdown-menu a{
+  display:block;
+  padding:10px;
+
+  color:#ddd;
+  border-radius:6px;
+}
+
+.dropdown-menu a:hover{
+  background:rgba(255,255,255,0.05);
+}
+
+/* =========================
+   Buttons
+========================= */
+
+.btn{
+  padding:8px 14px;
+
+  background:#5865F2;
+
+  border-radius:8px;
+
+  color:white;
+  text-decoration:none;
+
+  transition:.2s;
+}
+
+.btn:hover{
+  background:#4752c4;
+}
+
+/* =========================
+   Notice Bar
+========================= */
+
+.notice-bar{
+  position:fixed;
+
+  top:70px;
+  left:0;
+
+  width:100%;
+  height:40px;
+
+  background:rgba(255,0,0,0.75);
+
+  overflow:hidden;
+
+  display:flex;
+  align-items:center;
+
+  z-index:999;
+}
+
+.notice-text{
+  white-space:nowrap;
+
+  color:#fff;
+  font-size:16px;
+  font-weight:bold;
+
+  padding-left:100%;
+
+  animation:notice-scroll 16s linear infinite;
+}
+
+@keyframes notice-scroll{
+  0%{
+    transform:translateX(0);
+  }
+
+  100%{
+    transform:translateX(-100%);
+  }
+}
+
+/* =========================
+   Main
+========================= */
+
+.preview{
+  padding:40px;
+
+  text-align:center;
+
+  min-height:calc(100vh - 110px);
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  gap:2px;
+}
+
+.preview h1{
+  font-size:56px;
+  margin-bottom:2px;
+}
+
+.preview p{
+  width:90%;
+  max-width:900px;
+
+  line-height:1.8;
+  font-size:22px;
+
+  color:#bbb;
+
+  white-space:pre-line;
+}
+
+/* =========================
+   Action Buttons
+========================= */
+
+.action-buttons{
+  margin-top:22px;
+
+  display:flex;
+  gap:14px;
+
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.btn-primary,
+.btn-secondary{
+  padding:12px 18px;
+
+  border-radius:10px;
+
+  text-decoration:none;
+  font-weight:600;
+
+  transition:.2s;
+}
+
+.btn-primary{
+  background:#5865F2;
+  color:#fff;
+}
+
+.btn-primary:hover{
+  background:#4752c4;
+}
+
+.btn-secondary{
+  background:rgba(255,255,255,0.08);
+
+  color:#ddd;
+
+  border:1px solid rgba(255,255,255,0.12);
+}
+
+.btn-secondary:hover{
+  background:rgba(255,255,255,0.12);
+  color:#fff;
+}
+
+/* =========================
+   Embed Section
+========================= */
+
+.embed-section{
+  margin-top:60px;
+
+  width:90%;
+  max-width:1000px;
+
+  display:flex;
+  gap:30px;
+
+  align-items:center;
+  justify-content:space-between;
+
+  text-align:left;
+}
+
+.embed-text h2{
+  font-size:35px;
+  margin-bottom:10px;
+}
+
+.embed-text p{
+  font-size:20px;
+  color:#bbb;
+
+  line-height:1.6;
+}
+
+.embed-image{
+  width:100%;
+  max-width:350px;
+  height:auto;
+
+  border-radius:12px;
+  display:block;
+}
+
+/* =========================
+   CTA
+========================= */
+
+.big-cta{
+  margin-top:80px;
+
+  font-size:36px;
+  font-weight:800;
+
+  text-align:center;
+  line-height:1.4;
+}
+
+/* =========================
+   Footer
+========================= */
+
+.footer{
+  margin-top:15px;
+
+  width:100%;
+
+  background:#0c0e12;
+
+  padding:40px 0;
+}
+
+.footer-image{
+  width:420px;
+  height:180px;
+
+  border-radius:12px;
+
+  overflow:hidden;
+}
+
+.footer-image img{
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+
+  border-radius:12px;
+
+  display:block;
+}
+
+.footer-links{
+  display:flex;
+  gap:60px;
+}
+
+.footer-links h3{
+  font-size:14px;
+  margin-bottom:10px;
+}
+
+.footer-links a{
+  display:block;
+
+  color:#bbb;
+  text-decoration:none;
+
+  font-size:14px;
+  margin-bottom:6px;
+}
+
+.footer-links a:hover{
+  color:#5865F2;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width:768px){
+
+  nav{
+    display:none;
+  }
+
+  .embed-section{
+    flex-direction:column;
+    text-align:center;
+  }
+
+  .footer{
+    flex-direction:column;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <a class="logo" href="main.html">
+    <img src="gazou/boticon.png">
+    アイスBot
+  </a>
+
+  <nav>
+
+    <div class="dropdown">
+
+      <button class="dropbtn">
+        機能
+        <span class="chevron">▼</span>
+      </button>
+
+      <div class="dropdown-menu">
+        <a href="#">ゲーム募集</a>
+        <a href="#">埋め込みメッセージ</a>
+      </div>
+
+    </div>
+
+    <a href="command.html">コマンド</a>
+    <a href="support.html">サポート</a>
+    <a href="#">ドキュメント</a>
+
+  </nav>
+
+  <a class="" href=""></a>
+
+</header>
+
+<div class="notice-bar">
+  <div class="notice-text">
+    🔔 お知らせ：このサイトとBotはまだ作成中です
+  </div>
+</div>
+
+<div class="preview">
+
+  <h1>アイスBot</h1>
+
+  <p>
+Discordサーバーで「こんな機能があったらいいな」を形にするボットを作っています。
+管理を楽にする機能や荒らし対策、ChatGPT連携、投票機能、
+アナウンスチャンネルの自動公開、名言っぽい画像の生成など、
+サーバー運営とコミュニケーションをサポートします。
+  </p>
+
+  <div class="action-buttons">
+    <a class="btn-primary" href="https://discord.com/oauth2/authorize?client_id=1266903237244751873&permissions=8&integration_type=0&scope=bot">Discordサーバーに追加する</a>
+    <a class="btn-secondary" href="#">サポート鯖</a>
+  </div>
+
+<div class="embed-section reverse">
+
+  <img class="embed-image" src="gazou/game.png">
+
+  <div class="embed-text">
+    <h2>🎮 ゲーム募集機能</h2>
+
+    <p>
+      ゲームごとのロールに通知を送り、　　
+      一緒に遊ぶメンバーを簡単に募集できます。　　
+      気軽に仲間を集めてマルチプレイを楽しめます。
+    </p>
+  </div>
+
+</div>
+
+  <div class="embed-section">
+
+<div class="embed-text">
+  <h2>📨 埋め込みメッセージ作成</h2>
+
+  <p>
+    タイトル・本文・画像URLを入力するだけで、
+    Discord向けの美しい埋め込みメッセージを簡単に作成できます。
+    お知らせやイベント告知にも最適です。
+  </p>
+</div>
+
+    <img class="embed-image" src="gazou/umekomi.png">
+
+  </div>
+
+  <div class="big-cta">
+    サーバーの管理をアイスBotに任せてみませんか？
+  </div>
+
+</div>
+
+<footer class="footer">
+
+  <div style="max-width:1200px;margin:0 auto;padding:0 60px;display:flex;justify-content:space-between;gap:40px;align-items:flex-start;">
+
+    <div class="footer-image">
+     <img src="gazou/Botbana-.png">
+    </div>
+
+    <div class="footer-links">
+
+      <div>
+        <h3>ページ一覧</h3>
+        <a href="main.html">ホーム</a>
+        <a href="command.html">コマンド一覧</a>
+        <a href="support.html">サポート鯖</a>
+        <a href="kiyaku.html">利用規約</a>
+      </div>
+
+      <div>
+        <h3>その他のリンク</h3>
+        <a href="https://x.com/aisu_bot0415">Twitter</a>
+        <a href="https://roinyan1125.wixsite.com/roinyan">ロイにゃんのブログ</a>
+      </div>
+
+    </div>
+
+  </div>
+
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アイスBot - Discord</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Helvetica,Arial,sans-serif;
+}
+
+body{
+  background:#0f1115;
+  color:#fff;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* =========================
+   Header
+========================= */
+
+header{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:70px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:0 28px;
+
+  background:#14161c;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+
+  z-index:1000;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  font-size:22px;
+  font-weight:bold;
+
+  color:#5865F2;
+  text-decoration:none;
+}
+
+.logo img{
+  width:38px;
+  height:38px;
+  border-radius:8px;
+  object-fit:cover;
+}
+
+nav{
+  display:flex;
+  gap:18px;
+  align-items:center;
+}
+
+nav a{
+  text-decoration:none;
+  color:#ddd;
+  font-size:14px;
+
+  padding:6px 8px;
+  border-radius:6px;
+
+  transition:.2s;
+}
+
+nav a:hover{
+  color:#5865F2;
+  background:rgba(255,255,255,0.04);
+}
+
+/* =========================
+   Dropdown
+========================= */
+
+.dropdown{
+  position:relative;
+}
+
+.dropbtn{
+  background:transparent;
+  border:none;
+
+  color:#ddd;
+  font-size:14px;
+
+  cursor:pointer;
+
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.chevron{
+  font-size:11px;
+  color:#888;
+  transition:.2s;
+}
+
+.dropdown:hover .chevron{
+  transform:rotate(180deg);
+  color:#5865F2;
+}
+
+.dropdown-menu{
+  position:absolute;
+  top:100%;
+  left:0;
+
+  min-width:190px;
+
+  background:rgba(20,22,28,0.98);
+
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px;
+
+  padding:6px;
+  margin-top:14px;
+
+  opacity:0;
+  visibility:hidden;
+
+  transform:translateY(6px);
+
+  transition:
+    opacity .25s ease,
+    transform .25s ease,
+    visibility 0s linear .25s;
+}
+
+.dropdown:hover .dropdown-menu,
+.dropdown-menu:hover{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0);
+}
+
+.dropdown-menu a{
+  display:block;
+  padding:10px;
+
+  color:#ddd;
+  border-radius:6px;
+}
+
+.dropdown-menu a:hover{
+  background:rgba(255,255,255,0.05);
+}
+
+/* =========================
+   Main
+========================= */
+
+main{
+  flex:1;
+  padding-top:100px;
+}
+
+/* =========================
+   Commands
+========================= */
+
+.commands-section{
+  max-width:1250px;
+  margin:auto;
+  padding:30px 20px;
+}
+
+.commands-section h2{
+  margin-bottom:12px;
+  color:#fff;
+}
+
+.controls{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+.controls button{
+  background:#14161c;
+  border:1px solid rgba(255,255,255,.08);
+  color:#ddd;
+
+  padding:6px 14px;
+  border-radius:999px;
+
+  cursor:pointer;
+  font-size:14px;
+
+  transition:.2s;
+}
+
+.controls button:hover{
+  background:rgba(255,255,255,.05);
+}
+
+.controls button.active{
+  background:#5865F2;
+  color:#fff;
+  border-color:#5865F2;
+}
+
+.controls input{
+  flex:1;
+  min-width:160px;
+
+  background:#14161c;
+  color:#fff;
+
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:999px;
+
+  padding:6px 14px;
+  font-size:14px;
+}
+
+.controls input::placeholder{
+  color:#888;
+}
+
+.command{
+  background:#14161c;
+
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:14px;
+
+  margin-bottom:14px;
+  overflow:hidden;
+
+  transition:.2s;
+}
+
+.command:hover{
+  border-color:rgba(88,101,242,.4);
+}
+
+summary{
+  list-style:none;
+  cursor:pointer;
+
+  padding:14px 20px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+summary::-webkit-details-marker{
+  display:none;
+}
+
+.command-title{
+  font-weight:bold;
+  font-size:16px;
+  color:#fff;
+}
+
+.command-desc{
+  font-size:13px;
+  color:#9ca3af;
+  margin-top:2px;
+}
+
+.admin-only{
+  position:relative;
+  color:#ff6b6b;
+  font-size:13px;
+  margin-left:6px;
+  cursor:help;
+}
+
+.admin-only::after{
+  content:"管理者限定";
+
+  position:absolute;
+  bottom:140%;
+  left:50%;
+
+  transform:translateX(-50%) translateY(4px);
+
+  background:#14161c;
+  border:1px solid rgba(255,255,255,.08);
+
+  color:#fff;
+  font-size:12px;
+
+  padding:6px 10px;
+  border-radius:999px;
+
+  white-space:nowrap;
+
+  opacity:0;
+  pointer-events:none;
+
+  transition:.2s;
+}
+
+.admin-only:hover::after{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+.command-open-text{
+  display:none;
+  padding:10px 16px 0;
+  font-size:14px;
+  color:#c7c9d1;
+  line-height:1.6;
+}
+
+details[open] .command-open-text{
+  display:block;
+}
+
+.command-content{
+  display:none;
+  margin:12px;
+  background:#0f1115;
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:10px;
+  padding:12px 16px;
+  font-size:14px;
+  color:#d4d4d8;
+  line-height:1.6;
+}
+
+details[open] .command-content{
+  display:block;
+}
+
+.command-content pre{
+  background:#0b0d11;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:8px;
+  padding:10px;
+  margin-top:8px;
+  color:#fff;
+  overflow-x:auto;
+}
+
+.arrow{
+  font-size:12px;
+  color:#9ca3af;
+  transform:scaleX(1.5);
+  transition:.3s;
+}
+
+details[open] .arrow{
+  color:#5865F2;
+  transform:scaleX(1.5) rotate(180deg);
+}
+
+.command[data-category="gpt"] .command-title::after{
+  content:" 停止中";
+  display:inline-block;
+  margin-left:8px;
+  padding:2px 8px;
+  font-size:12px;
+  border-radius:999px;
+  background:rgba(239,68,68,.15);
+  color:#ff6b6b;
+  font-weight:bold;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width:768px){
+
+  nav{
+    display:none;
+  }
+
+  .commands-section{
+    padding:20px 14px;
+  }
+
+  .controls{
+    gap:6px;
+  }
+
+  input{
+    width:100%;
+  }
+
+  summary{
+    padding:12px 14px;
+  }
+
+  .command-title{
+    font-size:15px;
+  }
+
+  .command-desc{
+    font-size:12px;
+  }
+
+  .command-content{
+    font-size:13px;
+    padding:10px 12px;
+  }
+
+  .command-content pre{
+    font-size:12px;
+  }
+
+  .arrow{
+    font-size:14px;
+  }
+
+  .admin-only::after,
+  .admin-only::before{
+    display:none;
+  }
+}
+
+/* =========================
+   Footer
+========================= */
+
+.footer{
+  width:100%;
+  background:#0c0e12;
+  padding:40px 0;
+}
+
+.footer-image{
+  width:420px;
+  height:180px;
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.footer-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.footer-links{
+  display:flex;
+  gap:60px;
+}
+
+.footer-links h3{
+  font-size:14px;
+  margin-bottom:10px;
+}
+
+.footer-links a{
+  display:block;
+  color:#bbb;
+  text-decoration:none;
+  font-size:14px;
+  margin-bottom:6px;
+}
+
+.footer-links a:hover{
+  color:#5865F2;
+}
+</style>
+
+<body>
+
+<header>
+
+  <a class="logo" href="main.html">
+    <img src="gazou/boticon.png">
+    アイスBot
+  </a>
+
+  <nav>
+
+    <div class="dropdown">
+      <button class="dropbtn">
+        機能 <span class="chevron">▼</span>
+      </button>
+
+      <div class="dropdown-menu">
+        <a href="#">🎵 音楽</a>
+        <a href="#">🛡 モデレーション</a>
+        <a href="#">⚙ 自動化</a>
+      </div>
+    </div>
+
+    <a href="command.html">コマンド</a>
+    <a href="support.html">サポート</a>
+    <a href="#">ドキュメント</a>
+
+  </nav>
+
+    <a class="" href=""></a>
+
+</header>
+
+<main>
+
+<div class="commands-section">
+
+  <h2>🤖 Bot コマンド一覧</h2>
+
+  <div class="controls">
+    <button class="active" onclick="filterCategory('all')">全部</button>
+    <button onclick="filterCategory('normal')">普通</button>
+    <button onclick="filterCategory('admin')">管理</button>
+    <button onclick="filterCategory('anti')">荒らし対策</button>
+    <button onclick="filterCategory('utility')">便利</button>
+    <button onclick="filterCategory('gpt')">Chat GPT</button>
+    <button onclick="filterCategory('auto')">自動化</button>
+    <button onclick="filterCategory('fun')">お遊び</button>
+    <input type="text" placeholder="検索…" oninput="searchCommand(this.value)">
+  </div>
+
+<!-- ===== 普通 ===== -->
+<details class="command" data-category="normal">
+  <summary>
+    <div>
+      <div class="command-title">/help</div>
+      <div class="command-desc">ヘルプを表示</div>
+    </div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/help</pre></div>
+</details>
+
+<details class="command" data-category="normal">
+  <summary>
+    <div>
+      <div class="command-title">/ping</div>
+      <div class="command-desc">Botの応答速度を表示</div>
+    </div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/ping</pre></div>
+</details>
+
+<!-- ===== 管理 ===== -->
+<details class="command" data-category="admin">
+  <summary>
+    <div>
+      <div class="command-title">/embed <span class="admin-only">🔒</span></div>
+      <div class="command-desc">埋め込みメッセージを作成</div>
+    </div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/embed</pre></div>
+</details>
+
+<details class="command" data-category="admin">
+  <summary>
+    <div>
+      <div class="command-title">/timeout <span class="admin-only">🔒</span></div>
+      <div class="command-desc">ユーザーをタイムアウトする(最大28日)</div>
+    </div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/timeout [user] [days] [hours] [minutes] [seconds]
+/timeout user:@ユーザー名 days:28</pre></div>
+</details>
+
+<details class="command" data-category="admin">
+  <summary>
+    <div>
+      <div class="command-title">/userinfo <span class="admin-only">🔒</span></div>
+      <div class="command-desc">ユーザーの詳細情報を表示</div>
+    </div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/userinfo
+/userinfo [user]</pre></div>
+</details>
+
+<details class="command" data-category="admin">
+  <summary>
+    <div>
+      <div class="command-title">/log set <span class="admin-only">🔒</span></div>
+      <div class="command-desc">ログチャンネルを設定する</div>
+    </div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/log set
+/log set [type] [channel]</pre></div>
+</details>
+
+<details class="command" data-category="admin">
+  <summary>
+    <div>
+      <div class="command-title">/log show <span class="admin-only">🔒</span></div>
+      <div class="command-desc">現在のログ設定を表示する</div>
+    </div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/log show</pre></div>
+</details>
+
+<details class="command" data-category="admin">
+  <summary>
+    <div>
+      <div class="command-title">/log toggle <span class="admin-only">🔒</span></div>
+      <div class="command-desc">ログの有効化・無効化を切り替えます</div>
+    </div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/log toggle</pre></div>
+</details>
+
+<details class="command" data-category="admin">
+  <summary>
+    <div>
+      <div class="command-title">/warn <span class="admin-only">🔒</span></div>
+      <div class="command-desc">ユーザーを警告する</div>
+    </div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/warn [@ユーザー]</pre></div>
+</details>
+
+<!-- ===== 便利 ===== -->
+<details class="command" data-category="utility">
+  <summary>
+    <div><div class="command-title">/poll <span class="admin-only">🔒</span></div><div class="command-desc">投票を作成する</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/poll [question] [options] [duration]
+/poll question:あなたはパンを食べたことがありますか？ options:食べたことがない,食べたことがある duration:５秒
+</pre></div>
+</details>
+
+<details class="command" data-category="utility">
+  <summary>
+    <div><div class="command-title">/poll_end <span class="admin-only">🔒</span></div><div class="command-desc">投票を終了する</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/poll_end [message_id]
+/poll_end message_id:1234567890
+</pre></div>
+</details>
+
+<details class="command" data-category="utility">
+  <summary>
+    <div><div class="command-title">/ticket <span class="admin-only">🔒</span></div><div class="command-desc">お問い合わせ用のチケットを作成します</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-open-text"></div>
+  <div class="command-content"><pre>/ticket [open_category] [close_category]</pre></div>
+</details>
+
+<details class="command" data-category="utility">
+  <summary>
+    <div><div class="command-title">/recruit</div><div class="command-desc">ゲーム募集を作成</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/recruit
+/recruit [gamename]
+</pre></div>
+</details>
+
+<details class="command" data-category="utility">
+  <summary>
+    <div><div class="command-title">/setgame <span class="admin-only">🔒</span></div><div class="command-desc">ゲーム名とロール・絵文字を紐付けるコマンド</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/setgame [game_name] [role] [stamp]
+/setgame game_name:Minecraft role:@マインクラフト stamp:Minecraft
+</pre></div>
+</details>
+
+<details class="command" data-category="utility">
+  <summary>
+    <div><div class="command-title">/delgame <span class="admin-only">🔒</span></div><div class="command-desc">登録したゲーム設定を削除</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/delgame
+/delgame [mode]
+/delgame mode:1つ削除
+/delgame mode:すべて削除
+</pre></div>
+</details>
+
+<details class="command" data-category="utility">
+  <summary>
+    <div><div class="command-title">/set_game_channel <span class="admin-only">🔒</span></div><div class="command-desc">ゲーム募集チャンネルを設定</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/set_game_channel
+/set_game_channel [channel]
+/set_game_channel channel:ゲーム募集
+</pre></div>
+</details>
+
+<!-- ===== GPT ===== -->
+<details class="command" data-category="gpt">
+  <summary>
+    <div><div class="command-title">/gpt_info <span class="admin-only">🔒</span></div><div class="command-desc">現在のGPTチャンネルを確認します</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/gpt_info</pre></div>
+</details>
+
+<details class="command" data-category="gpt">
+  <summary>
+    <div><div class="command-title">/gpt_set <span class="admin-only">🔒</span></div><div class="command-desc">GPTチャンネル設定</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/gpt_set [channel]
+/gpt_set channel:Chat-GPT
+</pre></div>
+</details>
+
+<details class="command" data-category="gpt">
+  <summary>
+    <div><div class="command-title">/gpt_temp</div><div class="command-desc">設定外のチャンネルでGPTに質問</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/gpt_temp [question]
+/gpt_temp question:VCは何の略？
+</pre></div>
+</details>
+
+<details class="command" data-category="gpt">
+  <summary>
+    <div><div class="command-title">/gpt_unset <span class="admin-only">🔒</span></div><div class="command-desc">GPTチャンネル設定を解除します。</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/gpt_unset</pre></div>
+</details>
+
+<!-- ===== 自動化 ===== -->
+<details class="command" data-category="auto">
+  <summary>
+    <div><div class="command-title">/autopublish_set <span class="admin-only">🔒</span></div><div class="command-desc">自動公開ON/OFF</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/autopublish_set [channel]
+/autopublish_set channel:お知らせ
+</pre></div>
+</details>
+
+<details class="command" data-category="auto">
+  <summary>
+    <div><div class="command-title">/autopublish_remove <span class="admin-only">🔒</span></div><div class="command-desc">自動公開設定を完全に削除します</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/autopublish_remove</pre></div>
+</details>
+
+<!-- ===== お遊び ===== -->
+<details class="command" data-category="fun">
+  <summary>
+    <div><div class="command-title">/fortuneslip</div><div class="command-desc">おみくじ</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/fortuneslip</pre></div>
+</details>
+
+<details class="command" data-category="fun">
+  <summary>
+    <div><div class="command-title">/roulette</div><div class="command-desc">ランダム選択</div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/roulette [options]
+/roulette options:赤,青,白,黒
+</pre></div>
+</details>
+
+<details class="command" data-category="fun">
+  <summary>
+    <div><div class="command-title">/quote</div><div class="command-desc">名言みたいな画像を生成します(右クリックでも可) </div></div>
+    <div class="arrow">∨</div>
+  </summary>
+  <div class="command-content"><pre>/quote</pre></div>
+</details>
+
+</div>
+
+</main>
+
+<footer class="footer">
+
+  <div style="max-width:1200px;margin:0 auto;padding:0 60px;display:flex;justify-content:space-between;gap:40px;align-items:flex-start;">
+
+    <div class="footer-image">
+      <img src="gazou/Botbana-.png">
+    </div>
+
+    <div class="footer-links">
+
+      <div>
+        <h3>ページ一覧</h3>
+        <a href="main.html">ホーム</a>
+        <a href="command.html">コマンド一覧</a>
+        <a href="support.html">サポート鯖</a>
+        <a href="kiyaku.html">利用規約</a>
+      </div>
+
+      <div>
+        <h3>その他のリンク</h3>
+        <a href="https://twitter.com">Twitter</a>
+        <a href="#">ロイにゃんのブログ</a>
+      </div>
+
+    </div>
+
+  </div>
+
+</footer>
+
+<script>
+function filterCategory(cat) {
+  document.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+  event.target.classList.add("active");
+
+  document.querySelectorAll(".command").forEach(cmd => {
+    cmd.style.display =
+      cat === "all" || cmd.dataset.category === cat ? "" : "none";
+  });
+}
+
+function searchCommand(word) {
+  word = word.toLowerCase();
+  document.querySelectorAll(".command").forEach(cmd => {
+    cmd.style.display =
+      cmd.innerText.toLowerCase().includes(word) ? "" : "none";
+  });
+}
+</script>
+
+</body>
+</html>

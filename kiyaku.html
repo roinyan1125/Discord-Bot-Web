@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<!-- saved from url=(0072)file:///C:/Users/ryuse/OneDrive/Desktop/DiscordBot%20Web/V2/command.html -->
+<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アイスBot - Discord</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Helvetica,Arial,sans-serif;
+}
+
+body{
+  background:#0f1115;
+  color:#fff;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* =========================
+   Header
+========================= */
+
+header{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:70px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:0 28px;
+
+  background:#14161c;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+
+  z-index:1000;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  font-size:22px;
+  font-weight:bold;
+
+  color:#5865F2;
+  text-decoration:none;
+}
+
+.logo img{
+  width:38px;
+  height:38px;
+  border-radius:8px;
+  object-fit:cover;
+}
+
+nav{
+  display:flex;
+  gap:18px;
+  align-items:center;
+}
+
+nav a{
+  text-decoration:none;
+  color:#ddd;
+  font-size:14px;
+
+  padding:6px 8px;
+  border-radius:6px;
+
+  transition:.2s;
+}
+
+nav a:hover{
+  color:#5865F2;
+  background:rgba(255,255,255,0.04);
+}
+
+/* =========================
+   Dropdown
+========================= */
+
+.dropdown{
+  position:relative;
+}
+
+.dropbtn{
+  background:transparent;
+  border:none;
+
+  color:#ddd;
+  font-size:14px;
+
+  cursor:pointer;
+
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.chevron{
+  font-size:11px;
+  color:#888;
+  transition:.2s;
+}
+
+.dropdown:hover .chevron{
+  transform:rotate(180deg);
+  color:#5865F2;
+}
+
+.dropdown-menu{
+  position:absolute;
+  top:100%;
+  left:0;
+
+  min-width:190px;
+
+  background:rgba(20,22,28,0.98);
+
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px;
+
+  padding:6px;
+  margin-top:14px;
+
+  opacity:0;
+  visibility:hidden;
+
+  transform:translateY(6px);
+
+  transition:
+    opacity .25s ease,
+    transform .25s ease,
+    visibility 0s linear .25s;
+}
+
+.dropdown:hover .dropdown-menu,
+.dropdown-menu:hover{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0);
+}
+
+.dropdown-menu a{
+  display:block;
+  padding:10px;
+
+  color:#ddd;
+  border-radius:6px;
+}
+
+.dropdown-menu a:hover{
+  background:rgba(255,255,255,0.05);
+}
+
+/* =========================
+   Main Space
+========================= */
+
+main{
+  flex:1;
+  padding-top:70px;
+}
+
+/* =========================
+   Footer
+========================= */
+
+.footer{
+  width:100%;
+  background:#0c0e12;
+  padding:40px 0;
+}
+
+.footer-image{
+  width:420px;
+  height:180px;
+
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.footer-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.footer-links{
+  display:flex;
+  gap:60px;
+}
+
+.footer-links h3{
+  font-size:14px;
+  margin-bottom:10px;
+}
+
+.footer-links a{
+  display:block;
+  color:#bbb;
+  text-decoration:none;
+  font-size:14px;
+  margin-bottom:6px;
+}
+
+.footer-links a:hover{
+  color:#5865F2;
+}
+
+@media (max-width:768px){
+
+  nav{
+    display:none;
+  }
+
+  .footer-image{
+    width:100%;
+    max-width:420px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <a class="logo" href="#">
+    <img src="gazou/boticon.png">
+    アイスBot
+  </a>
+
+  <nav>
+
+    <div class="dropdown">
+
+      <button class="dropbtn">
+        機能
+        <span class="chevron">▼</span>
+      </button>
+
+      <div class="dropdown-menu">
+        <a href="file:///C:/Users/ryuse/OneDrive/Desktop/DiscordBot%20Web/V2/command.html#">🎵 音楽</a>
+        <a href="file:///C:/Users/ryuse/OneDrive/Desktop/DiscordBot%20Web/V2/command.html#">🛡 モデレーション</a>
+        <a href="file:///C:/Users/ryuse/OneDrive/Desktop/DiscordBot%20Web/V2/command.html#">⚙ 自動化</a>
+      </div>
+
+    </div>
+
+    <a href="file:///C:/Users/ryuse/OneDrive/Desktop/DiscordBot%20Web/V2/command.html#">コマンド</a>
+    <a href="file:///C:/Users/ryuse/OneDrive/Desktop/DiscordBot%20Web/V2/command.html#">サポート</a>
+    <a href="file:///C:/Users/ryuse/OneDrive/Desktop/DiscordBot%20Web/V2/command.html#">ドキュメント</a>
+
+  </nav>
+
+  <a class="" href=""></a>
+
+</header>
+
+<main>
+
+<section style="max-width:1000px;margin:0 auto;padding:60px 30px;">
+
+<h1 style="font-size:42px;margin-bottom:30px;">
+利用規約
+</h1>
+
+<p style="color:#bbb;line-height:1.9;">
+本利用規約は、アイスBot（以下「本サービス」）の利用条件を定めるものです。
+本サービスを利用した時点で、本規約に同意したものとみなします。
+</p>
+
+<h2 style="margin-top:50px;margin-bottom:15px;">
+サービスについて
+</h2>
+
+<p style="color:#bbb;line-height:1.9;">
+アイスBotはDiscord上で提供されるBotサービスおよび関連Webサイトです。
+運営者は事前の通知なく、サービス内容の変更、追加、一時停止または終了を行う場合があります。
+</p>
+
+<h2 style="margin-top:50px;margin-bottom:15px;">
+利用について
+</h2>
+
+<p style="color:#bbb;line-height:1.9;">
+利用者はDiscord利用規約および適用される法令を遵守した上で本サービスを利用するものとします。
+本サービスの利用は利用者自身の責任で行うものとします。
+</p>
+
+<h2 style="margin-top:50px;margin-bottom:15px;">
+禁止事項
+</h2>
+
+<ul style="color:#bbb;line-height:2;padding-left:25px;">
+<li>法令またはDiscord利用規約に違反する行為</li>
+<li>Botへの過度な負荷を与える行為</li>
+<li>不正アクセスまたは不正利用</li>
+<li>サービスの運営を妨害する行為</li>
+<li>他の利用者に迷惑や損害を与える行為</li>
+<li>運営者が不適切と判断する行為</li>
+</ul>
+
+<h2 style="margin-top:50px;margin-bottom:15px;">
+利用制限
+</h2>
+
+<p style="color:#bbb;line-height:1.9;">
+利用者が本規約に違反した場合、運営者は事前の通知なく本サービスの利用を制限または停止できるものとします。
+</p>
+
+<h2 style="margin-top:50px;margin-bottom:15px;">
+外部サービス
+</h2>
+
+<p style="color:#bbb;line-height:1.9;">
+本サービスには第三者が提供するWebサイトやサービスへのリンクが含まれる場合があります。
+運営者は第三者サービスの内容や安全性について保証せず、一切の責任を負いません。
+</p>
+
+<h2 style="margin-top:50px;margin-bottom:15px;">
+免責事項
+</h2>
+
+<p style="color:#bbb;line-height:1.9;">
+本サービスは現状のまま提供されます。
+運営者は、本サービスの利用または利用不能によって発生した損害について責任を負いません。
+</p>
+
+<ul style="color:#bbb;line-height:2;padding-left:25px;">
+<li>サービスが常に利用可能であること</li>
+<li>エラーや不具合が発生しないこと</li>
+<li>データが失われないこと</li>
+<li>利用者の期待する結果が得られること</li>
+</ul>
+
+<h2 style="margin-top:50px;margin-bottom:15px;">
+規約の変更
+</h2>
+
+<p style="color:#bbb;line-height:1.9;">
+運営者は必要に応じて本規約を変更できるものとします。
+変更後の規約は本サイトに掲載された時点で効力を持つものとします。
+</p>
+
+<h2 style="margin-top:50px;margin-bottom:15px;">
+お問い合わせ
+</h2>
+
+<p style="color:#bbb;line-height:1.9;">
+本規約に関するお問い合わせは、アイスBot公式サポートサーバーよりお願いいたします。
+</p>
+
+</section>
+
+</main>
+
+<footer class="footer">
+
+  <div style="max-width:1200px;margin:0 auto;padding:0 60px;display:flex;justify-content:space-between;gap:40px;align-items:flex-start;">
+
+    <div class="footer-image">
+      <img src="gazou/Botbana-.png">
+    </div>
+
+    <div class="footer-links">
+
+      <div>
+        <h3>ページ一覧</h3>
+        <a href="main.html">ホーム</a>
+        <a href="command.html">コマンド一覧</a>
+        <a href="support.html">サポート鯖</a>
+        <a href="kiyaku.html">利用規約</a>
+      </div>
+
+      <div>
+        <h3>その他のリンク</h3>
+        <a href="https://twitter.com/">Twitter</a>
+        <a href="file:///C:/Users/ryuse/OneDrive/Desktop/DiscordBot%20Web/V2/command.html#">ロイにゃんのブログ</a>
+      </div>
+
+    </div>
+
+  </div>
+
+</footer>
+
+
+</body></html>

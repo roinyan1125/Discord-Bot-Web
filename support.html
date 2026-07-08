@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アイスBot - Discord</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Helvetica,Arial,sans-serif;
+}
+
+body{
+  background:#0f1115;
+  color:#fff;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* =========================
+   Header
+========================= */
+
+header{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 28px;
+  background:#14161c;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  z-index:1000;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:22px;
+  font-weight:bold;
+  color:#5865F2;
+  text-decoration:none;
+}
+
+.logo img{
+  width:38px;
+  height:38px;
+  border-radius:8px;
+  object-fit:cover;
+}
+
+nav{
+  display:flex;
+  gap:18px;
+  align-items:center;
+}
+
+nav a{
+  text-decoration:none;
+  color:#ddd;
+  font-size:14px;
+  padding:6px 8px;
+  border-radius:6px;
+  transition:.2s;
+}
+
+nav a:hover{
+  color:#5865F2;
+  background:rgba(255,255,255,0.04);
+}
+
+/* =========================
+   Dropdown
+========================= */
+
+.dropdown{
+  position:relative;
+}
+
+.dropbtn{
+  background:transparent;
+  border:none;
+  color:#ddd;
+  font-size:14px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.chevron{
+  font-size:11px;
+  color:#888;
+  transition:.2s;
+}
+
+.dropdown:hover .chevron{
+  transform:rotate(180deg);
+  color:#5865F2;
+}
+
+.dropdown-menu{
+  position:absolute;
+  top:100%;
+  left:0;
+  min-width:190px;
+  background:rgba(20,22,28,0.98);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px;
+  padding:6px;
+  margin-top:14px;
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(6px);
+  transition:
+    opacity .25s ease,
+    transform .25s ease,
+    visibility 0s linear .25s;
+}
+
+.dropdown:hover .dropdown-menu,
+.dropdown-menu:hover{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0);
+}
+
+.dropdown-menu a{
+  display:block;
+  padding:10px;
+  color:#ddd;
+  border-radius:6px;
+}
+
+.dropdown-menu a:hover{
+  background:rgba(255,255,255,0.05);
+}
+
+/* =========================
+   Main
+========================= */
+
+main{
+  flex:1;
+  padding-top:70px;
+}
+
+.support-wrap{
+  max-width:1200px;
+  margin:0 auto;
+  padding:40px 60px;
+  display:flex;
+  gap:40px;
+  align-items:flex-start;
+  flex-wrap:wrap;
+}
+
+.left-box{
+  flex:1;
+  min-width:280px;
+}
+
+.left-box h1{
+  font-size:28px;
+  margin-bottom:16px;
+}
+
+.left-box p{
+  color:#bbb;
+  line-height:1.8;
+  margin-bottom:16px;
+}
+
+.left-box h3{
+  margin:20px 0 10px;
+}
+
+.left-box ul{
+  color:#aaa;
+  line-height:1.9;
+  padding-left:18px;
+}
+
+/* =========================
+   Discord Card
+========================= */
+
+.discord-card{
+  width:320px;
+  background:#2f3136;
+  border-radius:15px;
+  overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,0.3);
+}
+
+.banner img{
+  width:100%;
+  height:100px;
+  object-fit:cover;
+}
+
+.card-header{
+  display:flex;
+  gap:10px;
+  padding:10px 15px;
+}
+
+.server-icon{
+  width:60px;
+  height:60px;
+  border-radius:15px;
+  margin-top:-30px;
+  border:3px solid #2f3136;
+}
+
+.server-info{
+  flex:1;
+}
+
+.server-name{
+  font-weight:bold;
+  font-size:16px;
+}
+
+.status{
+  font-size:12px;
+  margin-top:3px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.online-dot{
+  width:8px;
+  height:8px;
+  background:#3ba55c;
+  border-radius:50%;
+}
+
+.created,
+.description{
+  font-size:12px;
+  margin-top:2px;
+}
+
+.tags span{
+  background:#4f545c;
+  border-radius:5px;
+  padding:2px 6px;
+  margin-right:5px;
+  font-size:12px;
+  display:inline-block;
+  margin-top:4px;
+}
+
+.join-button{
+  display:block;
+  text-align:center;
+  margin:10px 15px 15px;
+  background:#7289da;
+  color:#fff;
+  text-decoration:none;
+  padding:8px;
+  border-radius:8px;
+  font-weight:bold;
+}
+
+.join-button:hover{
+  background:#5b6eae;
+}
+
+/* =========================
+   Footer
+========================= */
+
+.footer{
+  width:100%;
+  background:#0c0e12;
+  padding:40px 0;
+  margin-top:60px;
+}
+
+.footer-inner{
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 60px;
+  display:flex;
+  justify-content:space-between;
+  gap:40px;
+  align-items:flex-start;
+}
+
+.footer-image{
+  width:420px;
+  height:180px;
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.footer-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.footer-links{
+  display:flex;
+  gap:60px;
+}
+
+.footer-links h3{
+  font-size:14px;
+  margin-bottom:10px;
+}
+
+.footer-links a{
+  display:block;
+  color:#bbb;
+  text-decoration:none;
+  font-size:14px;
+  margin-bottom:6px;
+}
+
+.footer-links a:hover{
+  color:#5865F2;
+}
+
+@media (max-width:768px){
+
+  nav{
+    display:none;
+  }
+
+  .support-wrap{
+    padding:30px 20px;
+  }
+
+  .footer-inner{
+    flex-direction:column;
+    padding:0 20px;
+  }
+
+  .footer-image{
+    width:100%;
+    max-width:420px;
+  }
+
+  .footer-links{
+    flex-wrap:wrap;
+    gap:30px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <a class="logo" href="main.html">
+    <img src="https://cdn.discordapp.com/icons/1288624678226624653/ab86eb1e189b80bbb8ecff93d8150731.webp?size=64">
+    アイスBot
+  </a>
+
+  <nav>
+
+    <div class="dropdown">
+
+      <button class="dropbtn">
+        機能
+        <span class="chevron">▼</span>
+      </button>
+
+      <div class="dropdown-menu">
+        <a href="#">🎵 音楽</a>
+        <a href="#">🛡 モデレーション</a>
+        <a href="#">⚙ 自動化</a>
+      </div>
+
+    </div>
+
+    <a href="command.html">コマンド</a>
+    <a href="support.html">サポート</a>
+    <a href="#">ドキュメント</a>
+
+  </nav>
+
+  <a class="" href=""></a>
+
+</header>
+
+<main>
+
+<section class="support-wrap">
+
+  <div class="left-box">
+
+    <h1>🤝 サポートサーバー</h1>
+
+    <p>
+      サポートサーバーに入ってくれると嬉しいです！<br>
+      アイスBotの最新情報やサポートを受け取ることができます。
+    </p>
+
+    <h3>サポートサーバーでできること</h3>
+
+    <ul>
+      <li>Botのアップデート通知を受け取れる</li>
+      <li>不具合や質問を運営に相談できる</li>
+      <li>使い方や機能について質問できる</li>
+      <li>最新情報をいち早くチェックできる</li>
+    </ul>
+
+  </div>
+
+  <div>
+
+    <div class="discord-card">
+
+      <div class="banner">
+        <img src="https://tse2.mm.bing.net/th/id/OIP.GCy6-81ur0SNPJr8BEULNgHaDh?rs=1&pid=ImgDetMain&o=7&rm=3">
+      </div>
+
+      <div class="card-header">
+
+        <img class="server-icon"
+        src="https://cdn.discordapp.com/icons/1288624678226624653/ab86eb1e189b80bbb8ecff93d8150731.webp?size=64">
+
+        <div class="server-info">
+
+          <div class="server-name" id="server-name">
+            読み込み中...
+          </div>
+
+          <div class="status" id="status">
+            <span class="online-dot"></span>
+            読み込み中...
+          </div>
+
+          <div class="created">
+            創設: 2025年12月
+          </div>
+
+          <div class="description">
+            アイスBot公式サーバー
+          </div>
+
+          <div class="tags">
+            <span>サポート鯖</span>
+            <span>🎫お問い合わせ</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <a
+      class="join-button"
+      id="join-button"
+      href="https://discord.com/invite/mN2e6WKMd2">
+        サーバーへ移動
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+<footer class="footer">
+
+  <div class="footer-inner">
+
+    <div class="footer-image">
+      <img src="gazou/Botbana-.png">
+    </div>
+
+    <div class="footer-links">
+
+      <div>
+        <h3>ページ一覧</h3>
+        <a href="main.html">ホーム</a>
+        <a href="command.html">コマンド一覧</a>
+        <a href="support.html">サポート鯖</a>
+        <a href="kiyaku.html">利用規約</a>
+      </div>
+
+      <div>
+        <h3>その他のリンク</h3>
+        <a href="#">Twitter</a>
+        <a href="#">ロイにゃんのブログ</a>
+      </div>
+
+    </div>
+
+  </div>
+
+</footer>
+
+<script>
+const GUILD_ID = "1288624678226624653";
+
+const statusEl = document.getElementById("status");
+const nameEl = document.getElementById("server-name");
+const joinBtn = document.getElementById("join-button");
+
+async function updateStatus() {
+  try {
+    const res = await fetch(
+      `https://discord.com/api/guilds/${GUILD_ID}/widget.json`
+    );
+
+    if (!res.ok) throw new Error("NG");
+
+    const data = await res.json();
+
+    nameEl.textContent = data.name;
+
+    const online = data.presence_count ?? 0;
+
+    statusEl.innerHTML =
+      `<span class="online-dot"></span> ${online}人がオンライン`;
+
+    if (data.instant_invite) {
+      joinBtn.href = data.instant_invite;
+    }
+
+  } catch (e) {
+
+    statusEl.innerHTML =
+      `<span class="online-dot"></span> 情報取得失敗`;
+
+    nameEl.textContent =
+      "サーバー情報取得失敗";
+  }
+}
+
+updateStatus();
+setInterval(updateStatus, 60000);
+</script>
+
+</body>
+</html>
