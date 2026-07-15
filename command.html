@@ -245,7 +245,8 @@ main{
   border-radius:14px;
 
   margin-bottom:14px;
-  overflow:hidden;
+  overflow:visible;
+  position:relative;
 
   transition:.2s;
 }
@@ -263,6 +264,8 @@ summary{
   display:flex;
   justify-content:space-between;
   align-items:center;
+
+  position:relative;
 }
 
 summary::-webkit-details-marker{
@@ -281,36 +284,39 @@ summary::-webkit-details-marker{
   margin-top:2px;
 }
 
+/* =========================
+   Admin Only Tooltip
+========================= */
+
 .admin-only{
   position:relative;
+  display:inline-block;
   color:#ff6b6b;
   font-size:13px;
   margin-left:6px;
   cursor:help;
+  z-index:2;
 }
 
 .admin-only::after{
   content:"管理者限定";
-
   position:absolute;
-  bottom:140%;
   left:50%;
-
+  bottom:140%;
   transform:translateX(-50%) translateY(4px);
 
   background:#14161c;
   border:1px solid rgba(255,255,255,.08);
-
   color:#fff;
   font-size:12px;
 
   padding:6px 10px;
   border-radius:999px;
-
   white-space:nowrap;
 
   opacity:0;
   pointer-events:none;
+  z-index:9999;
 
   transition:.2s;
 }
@@ -318,6 +324,13 @@ summary::-webkit-details-marker{
 .admin-only:hover::after{
   opacity:1;
   transform:translateX(-50%) translateY(0);
+}
+
+/* 必要なら上の要素で隠れないように */
+.command-content,
+.command-open-text{
+  position:relative;
+  z-index:1;
 }
 
 .command-open-text{
@@ -480,13 +493,14 @@ details[open] .arrow{
   color:#5865F2;
 }
 </style>
+</head>
 
 <body>
 
 <header>
 
   <a class="logo" href="index.html">
-    <img src="gazou/boticon.png">
+    <img src="gazou/boticon.png" alt="アイスBot">
     アイスBot
   </a>
 
@@ -510,7 +524,7 @@ details[open] .arrow{
 
   </nav>
 
-    <a class="" href=""></a>
+      <a class="" href=""></a>
 
 </header>
 
@@ -801,7 +815,7 @@ details[open] .arrow{
   <div style="max-width:1200px;margin:0 auto;padding:0 60px;display:flex;justify-content:space-between;gap:40px;align-items:flex-start;">
 
     <div class="footer-image">
-      <img src="gazou/Botbana-.png">
+      <img src="gazou/Botbana-.png" alt="フッター画像">
     </div>
 
     <div class="footer-links">
@@ -828,7 +842,7 @@ details[open] .arrow{
 
 <script>
 function filterCategory(cat) {
-  document.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".controls button").forEach(b => b.classList.remove("active"));
   event.target.classList.add("active");
 
   document.querySelectorAll(".command").forEach(cmd => {
